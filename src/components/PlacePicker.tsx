@@ -26,6 +26,7 @@ import { useTutorialStep } from "@/hooks/use-tutorial-step";
 import { useDebounce } from "@/hooks/useDebounce";
 import {
     additionalMapGeoLocations,
+    developerMode,
     isLoading,
     mapGeoJSON,
     mapGeoLocation,
@@ -57,6 +58,7 @@ export const PlacePicker = ({
     const $additionalMapGeoLocations = useStore(additionalMapGeoLocations);
     const $polyGeoJSON = useStore(polyGeoJSON);
     const $isLoading = useStore(isLoading);
+    const $developerMode = useStore(developerMode);
     const [open, setOpen] = useState(false);
     const [inputValue, setInputValue] = useState("");
     const debouncedValue = useDebounce<string>(inputValue);
@@ -297,18 +299,20 @@ export const PlacePicker = ({
                             ))}
                         </CommandGroup>
                     </CommandList>
-                    <Button
-                        variant="outline"
-                        className="font-normal bg-slate-50 hover:bg-slate-200"
-                        onClick={() => {
-                            mapGeoJSON.set(null);
-                            polyGeoJSON.set(null);
-                            questions.set([]);
-                            clearCache(CacheType.ZONE_CACHE);
-                        }}
-                    >
-                        Clear Questions & Cache
-                    </Button>
+                    {$developerMode && (
+                        <Button
+                            variant="outline"
+                            className="font-normal bg-slate-50 hover:bg-slate-200"
+                            onClick={() => {
+                                mapGeoJSON.set(null);
+                                polyGeoJSON.set(null);
+                                questions.set([]);
+                                clearCache(CacheType.ZONE_CACHE);
+                            }}
+                        >
+                            Clear Questions & Cache
+                        </Button>
+                    )}
                     <Button
                         variant="outline"
                         className="font-normal bg-blue-50 hover:bg-blue-200"
@@ -379,7 +383,7 @@ export const PlacePicker = ({
                     >
                         Restore DC Default
                     </Button>
-                    {$polyGeoJSON && (
+                    {$polyGeoJSON && $developerMode && (
                         <Button
                             variant="outline"
                             className="font-normal hover:bg-slate-200"

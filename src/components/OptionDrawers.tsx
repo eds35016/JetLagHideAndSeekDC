@@ -17,6 +17,7 @@ import {
     autoZoom,
     cheatMode,
     defaultUnit,
+    developerMode,
     disabledStations,
     displayHidingZonesOptions,
     enableTentaclesQuestions,
@@ -83,6 +84,7 @@ export const OptionDrawers = ({ className }: { className?: string }) => {
     const $alwaysUsePastebin = useStore(alwaysUsePastebin);
     const $followMe = useStore(followMe);
     const $cheatMode = useStore(cheatMode);
+    const $developerMode = useStore(developerMode);
     const [isOptionsOpen, setOptionsOpen] = useState(false);
 
     useEffect(() => {
@@ -360,31 +362,35 @@ export const OptionDrawers = ({ className }: { className?: string }) => {
                                     }}
                                 />
                             </div>
-                            {$highlightTrainLines && (
-                                <Separator className="bg-slate-300 w-[280px]" />
+                            {$developerMode && (
+                                <>
+                                    {$highlightTrainLines && (
+                                        <Separator className="bg-slate-300 w-[280px]" />
+                                    )}
+                                    <div className="flex flex-row items-center gap-2">
+                                        <label className="text-2xl font-semibold font-poppins">
+                                            Highlight train lines?
+                                        </label>
+                                        <Checkbox
+                                            checked={$highlightTrainLines}
+                                            onCheckedChange={() => {
+                                                const willBeEnabled =
+                                                    !$highlightTrainLines;
+                                                if (
+                                                    willBeEnabled &&
+                                                    !$thunderforestApiKey
+                                                ) {
+                                                    toast.warn(
+                                                        "A Thunderforest API key is required to highlight train lines. Please add one in the options below.",
+                                                    );
+                                                }
+                                                highlightTrainLines.set(willBeEnabled);
+                                            }}
+                                        />
+                                    </div>
+                                </>
                             )}
-                            <div className="flex flex-row items-center gap-2">
-                                <label className="text-2xl font-semibold font-poppins">
-                                    Highlight train lines?
-                                </label>
-                                <Checkbox
-                                    checked={$highlightTrainLines}
-                                    onCheckedChange={() => {
-                                        const willBeEnabled =
-                                            !$highlightTrainLines;
-                                        if (
-                                            willBeEnabled &&
-                                            !$thunderforestApiKey
-                                        ) {
-                                            toast.warn(
-                                                "A Thunderforest API key is required to highlight train lines. Please add one in the options below.",
-                                            );
-                                        }
-                                        highlightTrainLines.set(willBeEnabled);
-                                    }}
-                                />
-                            </div>
-                            {$highlightTrainLines && (
+                            {$developerMode && $highlightTrainLines && (
                                 <>
                                     <div className="flex flex-col items-center gap-2">
                                         <Label>Thunderforest API Key</Label>
@@ -572,6 +578,17 @@ export const OptionDrawers = ({ className }: { className?: string }) => {
                                     onCheckedChange={() =>
                                         cheatMode.set(!$cheatMode)
                                     }
+                                />
+                            </div>
+                            <div className="flex flex-row items-center gap-2">
+                                <label className="text-2xl font-semibold font-poppins">
+                                    Developer Mode?
+                                </label>
+                                <Checkbox
+                                    checked={$developerMode}
+                                    onCheckedChange={(checked) => {
+                                        developerMode.set(checked as boolean);
+                                    }}
                                 />
                             </div>
                             <div className="flex flex-row items-center gap-2">

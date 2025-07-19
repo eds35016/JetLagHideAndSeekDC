@@ -193,6 +193,10 @@ export const wmataApiKey = persistentAtom<string>("wmataApiKey", "", {
     encode: JSON.stringify,
     decode: JSON.parse,
 });
+export const developerMode = persistentAtom<boolean>("developerMode", false, {
+    encode: JSON.stringify,
+    decode: JSON.parse,
+});
 export const save = () => {
     questions.set([...questions.get()]);
     const $hiderMode = hiderMode.get();

@@ -14,6 +14,7 @@ import {
     addQuestion,
     animateMapMovements,
     autoZoom,
+    developerMode,
     followMe,
     hiderMode,
     highlightTrainLines,
@@ -48,6 +49,7 @@ export const Map = ({ className }: { className?: string }) => {
     const $hiderMode = useStore(hiderMode);
     const $isLoading = useStore(isLoading);
     const $followMe = useStore(followMe);
+    const $developerMode = useStore(developerMode);
     const map = useStore(leafletMapContext);
 
     const followMeMarkerRef = useMemo(
@@ -417,6 +419,18 @@ export const Map = ({ className }: { className?: string }) => {
             }
         };
     }, [$followMe, map]);
+
+    // Control zone sidebar trigger visibility based on developer mode
+    useEffect(() => {
+        const zoneSidebarTrigger = document.getElementById("zone-sidebar-trigger");
+        if (zoneSidebarTrigger) {
+            if ($developerMode) {
+                zoneSidebarTrigger.style.display = "block";
+            } else {
+                zoneSidebarTrigger.style.display = "none";
+            }
+        }
+    }, [$developerMode]);
 
     return displayMap;
 };
