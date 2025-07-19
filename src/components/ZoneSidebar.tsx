@@ -19,6 +19,7 @@ import {
 import {
     animateMapMovements,
     autoZoom,
+    developerMode,
     disabledStations,
     displayHidingZones,
     displayHidingZonesOptions,
@@ -69,6 +70,7 @@ export const ZoneSidebar = () => {
     const $hidingRadius = useStore(hidingRadius);
     const $hidingRadiusUnits = useStore(hidingRadiusUnits);
     const $isLoading = useStore(isLoading);
+    const $developerMode = useStore(developerMode);
     const map = useStore(leafletMapContext);
     const stations = useStore(trainStations);
     const $disabledStations = useStore(disabledStations);
@@ -380,17 +382,19 @@ export const ZoneSidebar = () => {
     ]);
 
     return (
-        <Sidebar side="right">
-            <div className="flex items-center justify-between">
-                <h2 className="ml-4 mt-4 font-poppins text-2xl">Hiding Zone</h2>
-                <SidebarCloseIcon
-                    className="mr-2 visible md:hidden scale-x-[-1]"
-                    onClick={() => {
-                        SidebarContext.get().setOpenMobile(false);
-                    }}
-                />
-            </div>
-            <SidebarContent ref={sidebarRef}>
+        <>
+            {$developerMode ? (
+                <Sidebar side="right">
+                    <div className="flex items-center justify-between">
+                        <h2 className="ml-4 mt-4 font-poppins text-2xl">Hiding Zone</h2>
+                        <SidebarCloseIcon
+                            className="mr-2 visible md:hidden scale-x-[-1]"
+                            onClick={() => {
+                                SidebarContext.get().setOpenMobile(false);
+                            }}
+                        />
+                    </div>
+                    <SidebarContent ref={sidebarRef}>
                 <ScrollToTop element={sidebarRef} minHeight={500} />
                 <SidebarGroup>
                     <SidebarGroupContent>
@@ -820,6 +824,8 @@ export const ZoneSidebar = () => {
                 </SidebarGroup>
             </SidebarContent>
         </Sidebar>
+            ) : null}
+        </>
     );
 };
 
