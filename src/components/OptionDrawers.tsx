@@ -15,9 +15,11 @@ import {
     animateMapMovements,
     autoSave,
     autoZoom,
+    cheatMode,
     defaultUnit,
     disabledStations,
     displayHidingZonesOptions,
+    enableTentaclesQuestions,
     followMe,
     hiderMode,
     hidingRadius,
@@ -31,9 +33,11 @@ import {
     polyGeoJSON,
     questions,
     save,
+    showMetroEntrances,
     showTutorial,
     thunderforestApiKey,
     triggerLocalRefresh,
+    wmataApiKey,
 } from "@/lib/context";
 import {
     cn,
@@ -65,6 +69,8 @@ export const OptionDrawers = ({ className }: { className?: string }) => {
     useStore(triggerLocalRefresh);
     const $defaultUnit = useStore(defaultUnit);
     const $highlightTrainLines = useStore(highlightTrainLines);
+    const $showMetroEntrances = useStore(showMetroEntrances);
+    const $enableTentaclesQuestions = useStore(enableTentaclesQuestions);
     const $animateMapMovements = useStore(animateMapMovements);
     const $autoZoom = useStore(autoZoom);
     const $hiderMode = useStore(hiderMode);
@@ -73,8 +79,10 @@ export const OptionDrawers = ({ className }: { className?: string }) => {
     const $planningMode = useStore(planningModeEnabled);
     const $thunderforestApiKey = useStore(thunderforestApiKey);
     const $pastebinApiKey = useStore(pastebinApiKey);
+    const $wmataApiKey = useStore(wmataApiKey);
     const $alwaysUsePastebin = useStore(alwaysUsePastebin);
     const $followMe = useStore(followMe);
+    const $cheatMode = useStore(cheatMode);
     const [isOptionsOpen, setOptionsOpen] = useState(false);
 
     useEffect(() => {
@@ -407,6 +415,54 @@ export const OptionDrawers = ({ className }: { className?: string }) => {
                                     <Separator className="bg-slate-300 w-[280px]" />{" "}
                                 </>
                             )}
+                            <div className="flex flex-row items-center gap-2">
+                                <label className="text-2xl font-semibold font-poppins">
+                                    Show metro entrances?
+                                </label>
+                                <Checkbox
+                                    checked={$showMetroEntrances}
+                                    onCheckedChange={() => {
+                                        showMetroEntrances.set(!$showMetroEntrances);
+                                    }}
+                                />
+                            </div>
+                            <Separator className="bg-slate-300 w-[280px]" />
+                            <div className="flex flex-row items-center gap-2">
+                                <label className="text-2xl font-semibold font-poppins">
+                                    Enable tentacles questions?
+                                </label>
+                                <Checkbox
+                                    checked={$enableTentaclesQuestions}
+                                    onCheckedChange={() => {
+                                        enableTentaclesQuestions.set(!$enableTentaclesQuestions);
+                                    }}
+                                />
+                            </div>
+                            <Separator className="bg-slate-300 w-[280px]" />
+                            <div className="flex flex-col items-center gap-2">
+                                <Label>WMATA API Key</Label>
+                                <Input
+                                    type="text"
+                                    value={$wmataApiKey}
+                                    onChange={(e) =>
+                                        wmataApiKey.set(e.target.value)
+                                    }
+                                    placeholder="Enter your WMATA API key"
+                                />
+                                <p className="text-xs text-gray-500">
+                                    Needed for real-time train information. Create a
+                                    key{" "}
+                                    <a
+                                        href="https://developer.wmata.com/"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-blue-500 cursor-pointer"
+                                    >
+                                        here
+                                    </a>
+                                    .
+                                </p>
+                            </div>
                             <Separator className="bg-slate-300 w-[280px]" />
                             <div className="flex flex-col items-center gap-2">
                                 <Label>Pastebin API Key</Label>
@@ -504,6 +560,17 @@ export const OptionDrawers = ({ className }: { className?: string }) => {
                                     checked={$followMe}
                                     onCheckedChange={() =>
                                         followMe.set(!$followMe)
+                                    }
+                                />
+                            </div>
+                            <div className="flex flex-row items-center gap-2">
+                                <label className="text-2xl font-semibold font-poppins">
+                                    Cheat Mode?
+                                </label>
+                                <Checkbox
+                                    checked={$cheatMode}
+                                    onCheckedChange={() =>
+                                        cheatMode.set(!$cheatMode)
                                     }
                                 />
                             </div>

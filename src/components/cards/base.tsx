@@ -1,6 +1,7 @@
 import { useStore } from "@nanostores/react";
 import { LockIcon, UnlockIcon } from "lucide-react";
 import { useState } from "react";
+import { toast } from "react-toastify";
 import { VscChevronDown, VscShare, VscTrash } from "react-icons/vsc";
 
 import {
@@ -15,14 +16,6 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import {
     SidebarGroup,
@@ -75,6 +68,7 @@ export const QuestionCard = ({
                             "absolute top-2 left-2 text-white border rounded-md transition-all duration-500",
                             isCollapsed && "-rotate-90",
                         )}
+                        title={isCollapsed ? "Expand section" : "Collapse section"}
                     >
                         <VscChevronDown />
                     </button>
@@ -92,39 +86,36 @@ export const QuestionCard = ({
                     >
                         <SidebarMenu>{children}</SidebarMenu>
                         <div className="flex gap-2 pt-2 px-2 justify-center">
-                            <Dialog>
-                                <DialogTrigger asChild>
-                                    <Button variant="outline" size="sm">
-                                        <VscShare />
-                                    </Button>
-                                </DialogTrigger>
-                                <DialogContent>
-                                    <DialogHeader>
-                                        <DialogTitle className="text-2xl">
-                                            Share this Question!
-                                        </DialogTitle>
-                                        <DialogDescription>
-                                            Below you can access the JSON
-                                            representing the question. Send this
-                                            to another player for them to copy.
-                                            They can then click &ldquo;Paste
-                                            Question&rdquo; at the bottom of the
-                                            &ldquo;Questions&rdquo; sidebar.
-                                        </DialogDescription>
-                                    </DialogHeader>
-                                    <textarea
-                                        className="w-full h-[300px] bg-slate-900 text-white rounded-md p-2"
-                                        readOnly
-                                        value={JSON.stringify(
-                                            $questions.find(
-                                                (q) => q.key === questionKey,
-                                            ),
-                                            null,
-                                            4,
-                                        )}
-                                    ></textarea>
-                                </DialogContent>
-                            </Dialog>
+                            <Button 
+                                variant="outline" 
+                                size="sm"
+                                onClick={() => {
+                                    if (!navigator || !navigator.clipboard) {
+                                        toast.error(
+                                            "Clipboard API not supported in your browser",
+                                        );
+                                        return;
+                                    }
+
+                                    const questionData = $questions.find(
+                                        (q) => q.key === questionKey,
+                                    );
+
+                                    toast.promise(
+                                        navigator.clipboard.writeText(
+                                            JSON.stringify(questionData, null, 4)
+                                        ),
+                                        {
+                                            pending: "Copying question to clipboard...",
+                                            success: "Question copied to clipboard!",
+                                            error: "An error occurred while copying",
+                                        },
+                                        { autoClose: 1000 },
+                                    );
+                                }}
+                            >
+                                <VscShare />
+                            </Button>
                             <AlertDialog>
                                 <AlertDialogTrigger asChild>
                                     <Button

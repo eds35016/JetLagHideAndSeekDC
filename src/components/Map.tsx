@@ -36,6 +36,7 @@ import { clearCache, determineMapBoundaries } from "@/maps/api";
 import { DraggableMarkers } from "./DraggableMarkers";
 import { LeafletFullScreenButton } from "./LeafletFullScreenButton";
 import { MapPrint } from "./MapPrint";
+import { MetroLinesOverlay } from "./MetroLinesOverlay";
 import { PolygonDraw } from "./PolygonDraw";
 
 export const Map = ({ className }: { className?: string }) => {
@@ -292,6 +293,7 @@ export const Map = ({ className }: { className?: string }) => {
                         noWrap
                     />
                 )}
+                <MetroLinesOverlay />
                 <DraggableMarkers />
                 <div className="leaflet-top leaflet-right">
                     <div className="leaflet-control flex-col flex gap-2">

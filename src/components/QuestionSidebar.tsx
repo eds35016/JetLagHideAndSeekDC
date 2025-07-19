@@ -16,6 +16,7 @@ import {
 import {
     addQuestion,
     autoSave,
+    enableTentaclesQuestions,
     isLoading,
     leafletMapContext,
     questions,
@@ -36,6 +37,7 @@ export const QuestionSidebar = () => {
     const $questions = useStore(questions);
     const $autoSave = useStore(autoSave);
     const $isLoading = useStore(isLoading);
+    const $enableTentaclesQuestions = useStore(enableTentaclesQuestions);
 
     return (
         <Sidebar>
@@ -154,27 +156,29 @@ export const QuestionSidebar = () => {
                                 Add Thermometer
                             </SidebarMenuButton>
                         </SidebarMenuItem>
-                        <SidebarMenuItem>
-                            <SidebarMenuButton
-                                onClick={() => {
-                                    const map = leafletMapContext.get();
-                                    if (!map) return;
+                        {$enableTentaclesQuestions && (
+                            <SidebarMenuItem>
+                                <SidebarMenuButton
+                                    onClick={() => {
+                                        const map = leafletMapContext.get();
+                                        if (!map) return;
 
-                                    const center = map.getCenter();
+                                        const center = map.getCenter();
 
-                                    addQuestion({
-                                        id: "tentacles",
-                                        data: {
-                                            lat: center.lat,
-                                            lng: center.lng,
-                                        },
-                                    });
-                                }}
-                                disabled={$isLoading}
-                            >
-                                Add Tentacles
-                            </SidebarMenuButton>
-                        </SidebarMenuItem>
+                                        addQuestion({
+                                            id: "tentacles",
+                                            data: {
+                                                lat: center.lat,
+                                                lng: center.lng,
+                                            },
+                                        });
+                                    }}
+                                    disabled={$isLoading}
+                                >
+                                    Add Tentacles
+                                </SidebarMenuButton>
+                            </SidebarMenuItem>
+                        )}
                         <SidebarMenuItem>
                             <SidebarMenuButton
                                 onClick={() => {

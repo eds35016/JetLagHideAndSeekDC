@@ -133,6 +133,20 @@ div.leaflet-control-attribution.leaflet-control {
     }
 }
 
+/* Metro line label styles */
+.metro-line-label {
+    background: transparent !important;
+    border: none !important;
+}
+
+.metro-line-label div {
+    font-family: 'Poppins', sans-serif;
+    -webkit-user-select: none;
+    user-select: none;
+    pointer-events: none;
+    transition: transform 0.2s ease;
+}
+
 /* Tutorial overlay animations */
 @keyframes breathe {
     0%,

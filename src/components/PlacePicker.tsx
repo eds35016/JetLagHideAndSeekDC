@@ -1,4 +1,5 @@
 import { useStore } from "@nanostores/react";
+import type { FeatureCollection, Polygon } from "geojson";
 import {
     ChevronsUpDown,
     LucideMinusSquare,
@@ -307,6 +308,76 @@ export const PlacePicker = ({
                         }}
                     >
                         Clear Questions & Cache
+                    </Button>
+                    <Button
+                        variant="outline"
+                        className="font-normal bg-blue-50 hover:bg-blue-200"
+                        onClick={() => {
+                            // Restore DC default hiding zone
+                            const dcDefaultLocation: OpenStreetMap = {
+                                geometry: {
+                                    coordinates: [-77.185135, 38.753012],
+                                    type: "Point",
+                                },
+                                type: "Feature",
+                                properties: {
+                                    osm_type: "R",
+                                    osm_id: 2826811,
+                                    extent: [-77.538071, -76.797867, 38.753012, 39.141777],
+                                    country: "United States",
+                                    osm_key: "place",
+                                    countrycode: "US",
+                                    osm_value: "region",
+                                    name: "Washington DC Area",
+                                    type: "region",
+                                },
+                            };
+
+                            const dcDefaultPolygon: FeatureCollection<Polygon> = {
+                                "type": "FeatureCollection",
+                                "features": [{
+                                    "type": "Feature",
+                                    "properties": {},
+                                    "geometry": {
+                                        "type": "Polygon",
+                                        "coordinates": [[
+                                            [-77.185135,38.753012],
+                                            [-77.109604,38.76613],
+                                            [-77.040596,38.788345],
+                                            [-76.969185,38.821789],
+                                            [-76.896057,38.806005],
+                                            [-76.797867,38.917483],
+                                            [-76.865501,38.980763],
+                                            [-76.884727,39.03572],
+                                            [-77.050896,39.08637],
+                                            [-77.162132,39.141777],
+                                            [-77.210541,39.126864],
+                                            [-77.149086,38.975158],
+                                            [-77.213974,38.946059],
+                                            [-77.505112,39.030653],
+                                            [-77.538071,39.000776],
+                                            [-77.45945,38.926832],
+                                            [-77.330017,38.910537],
+                                            [-77.289505,38.852275],
+                                            [-77.185135,38.753012]
+                                        ]]
+                                    }
+                                }]
+                            };
+
+                            mapGeoLocation.set(dcDefaultLocation);
+                            polyGeoJSON.set(dcDefaultPolygon);
+                            mapGeoJSON.set(null);
+                            additionalMapGeoLocations.set([]);
+                            questions.set([]);
+                            clearCache(CacheType.ZONE_CACHE);
+                            
+                            toast.success("Restored Washington DC default hiding zone", {
+                                autoClose: 2000,
+                            });
+                        }}
+                    >
+                        Restore DC Default
                     </Button>
                     {$polyGeoJSON && (
                         <Button
