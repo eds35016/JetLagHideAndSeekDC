@@ -1,8 +1,7 @@
 import { z } from "zod";
 
-import { defaultUnit } from "@/lib/context";
-
 import { ICON_COLORS } from "./api/constants";
+import { defaultUnit } from "@/lib/context";
 
 export const NO_GROUP = "NO_GROUP";
 
@@ -89,7 +88,7 @@ const getDefaultUnit = () => {
     } catch {
         return "miles";
     }
-};
+}
 
 const radiusQuestionSchema = ordinaryBaseQuestionSchema.extend({
     radius: z.number().min(0, "You cannot have a negative radius").default(50),
