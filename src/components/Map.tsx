@@ -114,7 +114,9 @@ export const Map = ({ className }: { className?: string }) => {
                 mapGeoData,
                 planningModeEnabled.get(),
                 (geoJSONObj, question) => {
-                    const geoJSONPlane = L.geoJSON(geoJSONObj);
+                    const geoJSONPlane = L.geoJSON(geoJSONObj, {
+                        interactive: false, // Allow clicks to pass through to underlying layers like metro stations
+                    });
                     // @ts-expect-error This is a check such that only this type of layer is removed
                     geoJSONPlane.questionKey = question.key;
                     geoJSONPlane.addTo(map);
@@ -133,7 +135,9 @@ export const Map = ({ className }: { className?: string }) => {
                 }
             });
 
-            const g = L.geoJSON(mapGeoData);
+            const g = L.geoJSON(mapGeoData, {
+                interactive: false, // Allow clicks to pass through to underlying layers like metro stations
+            });
             // @ts-expect-error This is a check such that only this type of layer is removed
             g.eliminationGeoJSON = true;
             g.addTo(map);
