@@ -9,6 +9,29 @@ import { highlightTrainLines, cheatMode, showMetroEntrances, wmataApiKey } from 
 import { TrainPredictions } from "./TrainPredictions";
 import { getStationCode, normalizeStationCodes } from "./stationCodes";
 
+// Railway line colors
+const RAILWAY_COLORS: Record<string, string> = {
+    "MARC-Brunswick": "#FFD100", // yellow (same as metro yellow)
+    "MARC-Penn": "#E51636", // red (same as metro red)
+    "MARC-Camden": "#ED8B00", // orange (same as metro orange)
+    "Manassas": "#009CDB", // blue (same as metro blue)
+    "Fredericksburg": "#E51636", // red (same as metro red)
+};
+
+// Station to railway line mapping
+const STATION_RAILWAY_LINES: Record<string, string[]> = {
+    "Union Station": ["MARC-Brunswick", "MARC-Penn", "MARC-Camden", "Manassas", "Fredericksburg"],
+    "Silver Spring": ["MARC-Brunswick"],
+    "Rockville": ["MARC-Brunswick"],
+    "Landover": ["MARC-Penn"],
+    "New Carrollton": ["MARC-Penn"],
+    "College Park-U of Md": ["MARC-Camden"],
+    "Greenbelt": ["MARC-Camden"],
+    "L'Enfant Plaza": ["Manassas", "Fredericksburg"],
+    "King St-Old Town": ["Manassas", "Fredericksburg"],
+    "Franconia-Springfield": ["Fredericksburg"],
+};
+
 interface MetroLineProperties {
     NAME: string;
     WEB_URL: string;
@@ -245,6 +268,9 @@ export const MetroLinesOverlay = () => {
                                 normalizeStationCodes(props.STATIONCODE) : 
                                 normalizeStationCodes(getStationCode(props.NAME));
                             
+                            // Get railway lines for this station
+                            const railwayLines = STATION_RAILWAY_LINES[props.NAME] || [];
+                            
                             // Create popup content
                             const trainPredictionsId = `train-predictions-${props.OBJECTID}`;
                             const popupContent = `
@@ -266,6 +292,21 @@ export const MetroLinesOverlay = () => {
                                                 display: inline-block;
                                                 margin-bottom: 2px;
                                             ">${line}</span>
+                                        `).join('')}
+                                        ${railwayLines.map((railwayLine: string) => `
+                                            <span style="
+                                                background-color: transparent;
+                                                color: ${RAILWAY_COLORS[railwayLine]};
+                                                border: 2px solid ${RAILWAY_COLORS[railwayLine]};
+                                                padding: 0px 4px;
+                                                border-radius: 8px;
+                                                font-size: 10px;
+                                                font-weight: 500;
+                                                text-transform: uppercase;
+                                                margin-right: 4px;
+                                                display: inline-block;
+                                                margin-bottom: 2px;
+                                            ">${railwayLine}</span>
                                         `).join('')}
                                     </div>
                                     <p style="margin: 0 0 8px 0; font-size: 12px; color: #666;">
