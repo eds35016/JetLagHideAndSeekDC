@@ -273,10 +273,11 @@ export const MetroLinesOverlay = () => {
                             
                             // Create popup content
                             const trainPredictionsId = `train-predictions-${props.OBJECTID}`;
+                            const displayName = props.NAME === "King St-Old Town" ? "King St-Old Town/Alexandria" : props.NAME;
                             const popupContent = `
                                 <div style="font-family: 'Poppins', sans-serif; min-width: 200px;">
                                     <h3 style="margin: 0 0 8px 0; color: #333; font-size: 16px;">
-                                        ${props.NAME}
+                                        ${displayName}
                                     </h3>
                                     <div style="margin-bottom: 8px;">
                                         ${lines.map((line: string, index: number) => `
