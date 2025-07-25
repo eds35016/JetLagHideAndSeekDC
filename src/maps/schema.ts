@@ -92,7 +92,7 @@ const getDefaultUnit = () => {
 };
 
 const radiusQuestionSchema = ordinaryBaseQuestionSchema.extend({
-    radius: z.number().min(0, "You cannot have a negative radius").default(50),
+    radius: z.number().min(0, "You cannot have a negative radius").default(10),
     unit: unitsSchema.default(getDefaultUnit),
     within: z.boolean().default(true),
 });
