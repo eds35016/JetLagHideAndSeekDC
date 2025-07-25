@@ -22,6 +22,7 @@ interface TrainPredictionsResponse {
 interface TrainPredictionsProps {
     stationCode: string | string[];
     isOpen: boolean;
+    isDarkMode?: boolean; // Add prop to control text colors for mobile drawer
 }
 
 const getLineColorClass = (line: string): string => {
@@ -36,11 +37,19 @@ const getLineColorClass = (line: string): string => {
     return colorMap[line] || 'bg-gray-600';
 };
 
-export const TrainPredictions = ({ stationCode, isOpen }: TrainPredictionsProps) => {
+export const TrainPredictions = ({ stationCode, isOpen, isDarkMode = false }: TrainPredictionsProps) => {
     const $wmataApiKey = useStore(wmataApiKey);
     const [predictions, setPredictions] = useState<TrainPrediction[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+
+    // Define colors based on dark mode
+    const colors = {
+        heading: isDarkMode ? "#ffffff" : "#333",
+        text: isDarkMode ? "#d1d5db" : "#6b7280", 
+        muted: isDarkMode ? "#9ca3af" : "#666",
+        error: "#dc2626"
+    };
 
     const fetchPredictions = async () => {
         if (!$wmataApiKey || !stationCode) return;
@@ -112,7 +121,7 @@ export const TrainPredictions = ({ stationCode, isOpen }: TrainPredictionsProps)
     if (loading && predictions.length === 0) {
         return (
             <div style={{ marginTop: "12px" }}>
-                <h4 style={{ fontWeight: "600", marginBottom: "8px", fontSize: "14px", color: "#333" }}>Train Arrivals</h4>
+                <h4 style={{ fontWeight: "600", marginBottom: "8px", fontSize: "14px", color: colors.heading }}>Train Arrivals</h4>
                 <div>
                     {[1, 2, 3].map((i) => (
                         <div key={i} style={{ display: "flex", alignItems: "center", marginBottom: "8px" }}>
@@ -129,8 +138,8 @@ export const TrainPredictions = ({ stationCode, isOpen }: TrainPredictionsProps)
     if (error) {
         return (
             <div style={{ marginTop: "12px" }}>
-                <h4 style={{ fontWeight: "600", marginBottom: "8px", fontSize: "14px", color: "#333" }}>Train Arrivals</h4>
-                <p style={{ color: "#dc2626", fontSize: "12px" }}>{error}</p>
+                <h4 style={{ fontWeight: "600", marginBottom: "8px", fontSize: "14px", color: colors.heading }}>Train Arrivals</h4>
+                <p style={{ color: colors.error, fontSize: "12px" }}>{error}</p>
             </div>
         );
     }
@@ -138,18 +147,18 @@ export const TrainPredictions = ({ stationCode, isOpen }: TrainPredictionsProps)
     if (predictions.length === 0 && !loading) {
         return (
             <div style={{ marginTop: "12px" }}>
-                <h4 style={{ fontWeight: "600", marginBottom: "8px", fontSize: "14px", color: "#333" }}>Train Arrivals</h4>
-                <p style={{ color: "#6b7280", fontSize: "12px" }}>No trains scheduled</p>
+                <h4 style={{ fontWeight: "600", marginBottom: "8px", fontSize: "14px", color: colors.heading }}>Train Arrivals</h4>
+                <p style={{ color: colors.text, fontSize: "12px" }}>No trains scheduled</p>
             </div>
         );
     }
 
     return (
         <div style={{ marginTop: "12px" }}>
-            <h4 style={{ fontWeight: "600", marginBottom: "8px", fontSize: "14px", color: "#333" }}>
+            <h4 style={{ fontWeight: "600", marginBottom: "8px", fontSize: "14px", color: colors.heading }}>
                 Train Arrivals
                 {loading && (
-                    <span style={{ marginLeft: "8px", fontSize: "12px", color: "#666" }}>Updating...</span>
+                    <span style={{ marginLeft: "8px", fontSize: "12px", color: colors.muted }}>Updating...</span>
                 )}
             </h4>
             <div style={{ maxHeight: "128px", overflowY: "auto" }}>
@@ -169,12 +178,12 @@ export const TrainPredictions = ({ stationCode, isOpen }: TrainPredictionsProps)
                             >
                                 {train.Line}
                             </span>
-                            <span style={{ fontWeight: "500", marginRight: "4px" }}>{train.Destination}</span>
+                            <span style={{ fontWeight: "500", marginRight: "4px", color: colors.heading }}>{train.Destination}</span>
                             {train.Car && (
-                                <span style={{ fontSize: "10px", color: "#666" }}>({train.Car} car)</span>
+                                <span style={{ fontSize: "10px", color: colors.muted }}>({train.Car} car)</span>
                             )}
                         </div>
-                        <span style={{ fontWeight: "600" }}>
+                        <span style={{ fontWeight: "600", color: colors.heading }}>
                             {train.Min === 'ARR' ? 'Arriving' : 
                              train.Min === 'BRD' ? 'Boarding' :
                              train.Min === '---' || !train.Min ? '--' :
