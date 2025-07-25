@@ -19,6 +19,7 @@ import {
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useTutorialStep } from "@/hooks/use-tutorial-step";
 import { cn } from "@/lib/utils";
+import { activeSidebarAtom, openSidebar, closeSidebar } from "@/lib/sidebar-coordination";
 
 const SIDEBAR_COOKIE_NAME = "sidebar:state";
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
@@ -87,6 +88,13 @@ const SidebarProvider = React.forwardRef<
                     _setOpen(openState);
                 }
 
+                // Coordinate with other left sidebars
+                if (openState) {
+                    openSidebar("questions");
+                } else {
+                    closeSidebar();
+                }
+
                 // This sets the cookie to keep the sidebar state.
                 document.cookie = `${SIDEBAR_COOKIE_NAME}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`;
             },
@@ -115,6 +123,17 @@ const SidebarProvider = React.forwardRef<
             window.addEventListener("keydown", handleKeyDown);
             return () => window.removeEventListener("keydown", handleKeyDown);
         }, [toggleSidebar]);
+
+        // Close this sidebar when another left sidebar becomes active
+        React.useEffect(() => {
+            const unsubscribe = activeSidebarAtom.subscribe((activeSidebar) => {
+                if (activeSidebar !== "questions" && activeSidebar !== null && open) {
+                    _setOpen(false);
+                }
+            });
+            
+            return unsubscribe;
+        }, [open]);
 
         // We add a state so that we can do data-state="expanded" or "collapsed".
         // This makes it easier to style the sidebar with Tailwind classes.

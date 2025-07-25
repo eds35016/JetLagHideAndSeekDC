@@ -1,9 +1,11 @@
 {
-    "name": "Jet Lag Hide and Seek Map Generator",
+    "name": "jetlag-hide-and-seek-map-generator",
     "type": "module",
     "version": "0.0.1",
     "scripts": {
         "dev": "astro dev",
+        "dev:team-server": "node team-server.js",
+        "dev:full": "concurrently \"npm run dev\" \"npm run dev:team-server\"",
         "build": "astro build",
         "preview": "astro preview",
         "astro": "astro",
@@ -57,6 +59,7 @@
         "tailwindcss-animate": "^1.0.7",
         "typescript": "^5.7.3",
         "vaul": "^1.1.2",
+        "ws": "^8.18.0",
         "zod": "^3.25.28"
     },
     "devDependencies": {
@@ -66,9 +69,12 @@
         "@types/leaflet": "^1.9.16",
         "@types/leaflet-draw": "^1.0.11",
         "@types/lodash": "^4.17.15",
+        "@types/node": "^22.15.19",
         "@types/react": "19.0.8",
         "@types/react-dom": "19.0.3",
         "@types/terraformer__arcgis": "^2.0.5",
+        "@types/ws": "^8.5.13",
+        "concurrently": "^9.1.0",
         "eslint": "^9.19.0",
         "eslint-config-prettier": "^10.0.1",
         "eslint-plugin-import-alias": "^1.2.0",
@@ -76,6 +82,7 @@
         "eslint-plugin-simple-import-sort": "^12.1.1",
         "globals": "^16.0.0",
         "prettier": "3.5.3",
+        "ts-node": "^10.9.2",
         "typescript-eslint": "^8.24.0",
         "vitest": "^3.1.4"
     }

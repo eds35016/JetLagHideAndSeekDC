@@ -1,0 +1,10 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { TimerControlPanel } from "@/components/TimerControlPanel";
+---
+
+<Layout className="bg-jetlag">
+    <main class="min-h-screen flex items-center justify-center p-4">
+        <TimerControlPanel client:load />
+    </main>
+</Layout>

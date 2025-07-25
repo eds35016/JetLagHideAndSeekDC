@@ -302,3 +302,60 @@ export const cheatMode = persistentAtom<boolean>("cheatMode", false, {
     encode: JSON.stringify,
     decode: JSON.parse,
 });
+
+// Team and timer related state
+export type TeamColor = "green" | "yellow" | "blue" | "red";
+
+export interface TeamRun {
+    id: string;
+    teamColor: TeamColor;
+    startTime: number;
+    endTime?: number;
+    duration?: number;
+}
+
+export interface TeamState {
+    activeTeam: TeamColor | null;
+    currentRunId: string | null;
+    currentRunStartTime: number | null;
+    isRunning: boolean;
+    teamRuns: TeamRun[];
+}
+
+export const teamState = atom<TeamState>({
+    activeTeam: null,
+    currentRunId: null,
+    currentRunStartTime: null,
+    isRunning: false,
+    teamRuns: [],
+});
+
+export const selectedTeam = persistentAtom<TeamColor | null>("selectedTeam", null, {
+    encode: JSON.stringify,
+    decode: JSON.parse,
+});
+export const selectedTimerTeam = persistentAtom<TeamColor | null>("selectedTimerTeam", null, {
+    encode: JSON.stringify,
+    decode: JSON.parse,
+});
+export const enabledTeams = persistentAtom<Record<TeamColor, boolean>>("enabledTeams", {
+    green: true,
+    yellow: true,
+    blue: true,
+    red: true,
+}, {
+    encode: JSON.stringify,
+    decode: JSON.parse,
+});
+
+export const customTeamNames = persistentAtom<Record<TeamColor, string>>("customTeamNames", {
+    green: "Green Team",
+    yellow: "Yellow Team",
+    blue: "Blue Team",
+    red: "Red Team",
+}, {
+    encode: JSON.stringify,
+    decode: JSON.parse,
+});
+
+export const isTeamSidebarOpen = atom<boolean>(false);

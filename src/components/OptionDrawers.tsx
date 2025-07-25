@@ -288,6 +288,16 @@ export const OptionDrawers = ({ className }: { className?: string }) => {
             >
                 Tutorial
             </Button>
+            {$developerMode && (
+                <Button
+                    className="w-24 shadow-md"
+                    onClick={() => {
+                        window.open('/timer', '_blank');
+                    }}
+                >
+                    Timer
+                </Button>
+            )}
             <Drawer open={isOptionsOpen} onOpenChange={setOptionsOpen}>
                 <DrawerTrigger className="w-24" asChild>
                     <Button
