@@ -11,6 +11,22 @@ let globalTeamState = {
     teamRuns: [],
 };
 
+// Team configuration state
+let teamConfig = {
+    enabledTeams: {
+        green: true,
+        yellow: true,
+        blue: true,
+        red: true,
+    },
+    customTeamNames: {
+        green: "Green Team",
+        yellow: "Yellow Team",
+        blue: "Blue Team",
+        red: "Red Team",
+    },
+};
+
 // Create HTTP server
 const server = createServer();
 
@@ -37,7 +53,10 @@ wss.on('connection', (ws, request) => {
     // Send current state to new client
     ws.send(JSON.stringify({
         type: 'team_state_sync',
-        payload: globalTeamState
+        payload: {
+            teamState: globalTeamState,
+            teamConfig: teamConfig
+        }
     }));
 
     ws.on('message', (data) => {
@@ -51,10 +70,16 @@ wss.on('connection', (ws, request) => {
                 case 'team_run_stop':
                     handleTeamRunStop(message.payload);
                     break;
+                case 'team_config_update':
+                    handleTeamConfigUpdate(message.payload);
+                    break;
                 case 'get_team_state':
                     ws.send(JSON.stringify({
                         type: 'team_state_sync',
-                        payload: globalTeamState
+                        payload: {
+                            teamState: globalTeamState,
+                            teamConfig: teamConfig
+                        }
                     }));
                     break;
                 default:
@@ -175,6 +200,44 @@ function handleTeamRunStop(payload) {
     console.log(`Stopped run ${runId} with duration ${duration}ms`);
 }
 
+function handleTeamConfigUpdate(payload) {
+    const { type, data } = payload;
+    
+    if (!type || !data) {
+        console.error('Invalid team config update payload:', payload);
+        return;
+    }
+
+    switch (type) {
+        case 'enabledTeams':
+            if (typeof data === 'object' && data !== null) {
+                teamConfig.enabledTeams = { ...teamConfig.enabledTeams, ...data };
+                console.log('Updated enabled teams:', teamConfig.enabledTeams);
+            }
+            break;
+        case 'customTeamNames':
+            if (typeof data === 'object' && data !== null) {
+                teamConfig.customTeamNames = { ...teamConfig.customTeamNames, ...data };
+                console.log('Updated team names:', teamConfig.customTeamNames);
+            }
+            break;
+        default:
+            console.error('Unknown team config update type:', type);
+            return;
+    }
+
+    // Broadcast the config update to all clients
+    broadcast({
+        type: 'team_config_updated',
+        payload: {
+            configType: type,
+            teamConfig: teamConfig
+        }
+    });
+
+    console.log(`Team config updated: ${type}`);
+}
+
 // HTTP endpoints for REST API
 server.on('request', (req, res) => {
     const { pathname } = parse(req.url || '', true);
@@ -192,7 +255,38 @@ server.on('request', (req, res) => {
 
     if (pathname === '/api/teams/state' && req.method === 'GET') {
         res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify(globalTeamState));
+        res.end(JSON.stringify({
+            teamState: globalTeamState,
+            teamConfig: teamConfig
+        }));
+        return;
+    }
+
+    if (pathname === '/api/teams/config' && req.method === 'GET') {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify(teamConfig));
+        return;
+    }
+
+    if (pathname === '/api/teams/config' && req.method === 'POST') {
+        let body = '';
+        
+        req.on('data', chunk => {
+            body += chunk.toString();
+        });
+        
+        req.on('end', () => {
+            try {
+                const updateData = JSON.parse(body);
+                handleTeamConfigUpdate(updateData);
+                
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ success: true, teamConfig: teamConfig }));
+            } catch (error) {
+                res.writeHead(400, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ error: 'Invalid JSON' }));
+            }
+        });
         return;
     }
 
@@ -207,7 +301,10 @@ server.on('request', (req, res) => {
         
         broadcast({
             type: 'team_state_sync',
-            payload: globalTeamState
+            payload: {
+                teamState: globalTeamState,
+                teamConfig: teamConfig
+            }
         });
         
         res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -238,7 +335,10 @@ server.on('request', (req, res) => {
         
         broadcast({
             type: 'team_state_sync',
-            payload: globalTeamState
+            payload: {
+                teamState: globalTeamState,
+                teamConfig: teamConfig
+            }
         });
         
         res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -283,7 +383,10 @@ server.on('request', (req, res) => {
                 
                 broadcast({
                     type: 'team_state_sync',
-                    payload: globalTeamState
+                    payload: {
+                        teamState: globalTeamState,
+                        teamConfig: teamConfig
+                    }
                 });
                 
                 res.writeHead(200, { 'Content-Type': 'application/json' });

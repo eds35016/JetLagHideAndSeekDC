@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { RunEditDialog } from "@/components/RunEditDialog";
 import { selectedTimerTeam, teamState, enabledTeams, customTeamNames, type TeamColor, type TeamRun } from "@/lib/context";
-import { broadcastTeamRunStart, broadcastTeamRunStop, teamUpdateService, deleteTeamRun, clearAllTeamRuns } from "@/lib/team-updates";
+import { broadcastTeamRunStart, broadcastTeamRunStop, teamUpdateService, deleteTeamRun, clearAllTeamRuns, broadcastEnabledTeamsUpdate, broadcastCustomTeamNamesUpdate } from "@/lib/team-updates";
 
 const TEAM_COLORS: Record<TeamColor, string> = {
     green: "bg-green-500 hover:bg-green-600 text-white",
@@ -133,6 +133,9 @@ export const TimerControlPanel = () => {
     const updateTeamName = (team: TeamColor, newName: string) => {
         const newTeamNames = { ...$customTeamNames, [team]: newName };
         customTeamNames.set(newTeamNames);
+        
+        // Broadcast the update to all clients
+        broadcastCustomTeamNamesUpdate(newTeamNames);
     };
 
     const resetTeamNames = () => {
@@ -143,6 +146,10 @@ export const TimerControlPanel = () => {
             red: "Red Team",
         };
         customTeamNames.set(defaultNames);
+        
+        // Broadcast the update to all clients
+        broadcastCustomTeamNamesUpdate(defaultNames);
+        
         toast.success("Team names reset to defaults");
     };
 
@@ -155,6 +162,9 @@ export const TimerControlPanel = () => {
 
         const newEnabledTeams = { ...$enabledTeams, [team]: !$enabledTeams[team] };
         enabledTeams.set(newEnabledTeams);
+        
+        // Broadcast the update to all clients
+        broadcastEnabledTeamsUpdate(newEnabledTeams);
         
         // If disabling the currently selected team, deselect it
         if (!newEnabledTeams[team] && $selectedTeam === team) {

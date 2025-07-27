@@ -1,7 +1,7 @@
-import { teamState, type TeamColor, type TeamRun } from "@/lib/context";
+import { teamState, enabledTeams, customTeamNames, type TeamColor, type TeamRun } from "@/lib/context";
 
 export interface TeamUpdateMessage {
-    type: 'team_run_started' | 'team_run_stopped' | 'team_state_update' | 'team_state_sync';
+    type: 'team_run_started' | 'team_run_stopped' | 'team_state_update' | 'team_state_sync' | 'team_config_updated';
     payload: {
         activeTeam?: TeamColor | null;
         currentRunId?: string | null;
@@ -11,6 +11,11 @@ export interface TeamUpdateMessage {
         updatedRun?: TeamRun;
         teamRuns?: TeamRun[];
         teamState?: any;
+        teamConfig?: {
+            enabledTeams?: Record<TeamColor, boolean>;
+            customTeamNames?: Record<TeamColor, string>;
+        };
+        configType?: string;
     };
 }
 
@@ -109,6 +114,28 @@ class TeamUpdateService {
                         isRunning: update.payload.isRunning ?? false,
                         teamRuns: update.payload.teamRuns ?? [],
                     });
+                }
+                
+                // Sync team configuration if provided
+                if (update.payload.teamConfig) {
+                    if (update.payload.teamConfig.enabledTeams) {
+                        enabledTeams.set(update.payload.teamConfig.enabledTeams);
+                    }
+                    if (update.payload.teamConfig.customTeamNames) {
+                        customTeamNames.set(update.payload.teamConfig.customTeamNames);
+                    }
+                }
+                break;
+                
+            case 'team_config_updated':
+                console.log('Team config updated:', update.payload);
+                if (update.payload.teamConfig) {
+                    if (update.payload.teamConfig.enabledTeams) {
+                        enabledTeams.set(update.payload.teamConfig.enabledTeams);
+                    }
+                    if (update.payload.teamConfig.customTeamNames) {
+                        customTeamNames.set(update.payload.teamConfig.customTeamNames);
+                    }
                 }
                 break;
                 
@@ -281,4 +308,25 @@ export const clearAllTeamRuns = async (): Promise<boolean> => {
         console.error('Error clearing runs:', error);
         return false;
     }
+};
+
+// Helper functions to broadcast team configuration updates
+export const broadcastEnabledTeamsUpdate = (enabledTeamsData: Record<TeamColor, boolean>) => {
+    teamUpdateService.broadcastUpdate({
+        type: 'team_config_update',
+        payload: {
+            type: 'enabledTeams',
+            data: enabledTeamsData,
+        }
+    });
+};
+
+export const broadcastCustomTeamNamesUpdate = (customTeamNamesData: Record<TeamColor, string>) => {
+    teamUpdateService.broadcastUpdate({
+        type: 'team_config_update',
+        payload: {
+            type: 'customTeamNames',
+            data: customTeamNamesData,
+        }
+    });
 };
