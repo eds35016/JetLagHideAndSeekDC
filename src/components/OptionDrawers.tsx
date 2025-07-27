@@ -292,7 +292,7 @@ export const OptionDrawers = ({ className }: { className?: string }) => {
                 <Button
                     className="w-24 shadow-md"
                     onClick={() => {
-                        window.open('/timer', '_blank');
+                        window.open('/JetLagHideAndSeek/timer', '_blank');
                     }}
                 >
                     Timer
