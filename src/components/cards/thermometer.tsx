@@ -20,11 +20,13 @@ export const ThermometerQuestionComponent = ({
     questionKey,
     sub,
     className,
+    hideDeleteButton,
 }: {
     data: ThermometerQuestion;
     questionKey: number;
     sub?: string;
     className?: string;
+    hideDeleteButton?: boolean;
 }) => {
     useStore(triggerLocalRefresh);
     const $hiderMode = useStore(hiderMode);
@@ -50,6 +52,7 @@ export const ThermometerQuestionComponent = ({
             }}
             locked={!data.drag}
             setLocked={(locked) => questionModified((data.drag = !locked))}
+            hideDeleteButton={hideDeleteButton}
         >
             <LatitudeLongitude
                 latitude={data.latA}

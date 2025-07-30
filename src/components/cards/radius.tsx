@@ -26,11 +26,13 @@ export const RadiusQuestionComponent = ({
     questionKey,
     sub,
     className,
+    hideDeleteButton,
 }: {
     data: RadiusQuestion;
     questionKey: number;
     sub?: string;
     className?: string;
+    hideDeleteButton?: boolean;
 }) => {
     useStore(triggerLocalRefresh);
     const $hiderMode = useStore(hiderMode);
@@ -56,6 +58,7 @@ export const RadiusQuestionComponent = ({
             }}
             locked={!data.drag}
             setLocked={(locked) => questionModified((data.drag = !locked))}
+            hideDeleteButton={hideDeleteButton}
         >
             <SidebarMenuItem>
                 <div className={cn(MENU_ITEM_CLASSNAME, "gap-2 flex flex-row")}>

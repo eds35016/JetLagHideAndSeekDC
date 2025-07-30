@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/sidebar-l";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import {
+    developerMode,
     displayHidingZones,
     drawingQuestionKey,
     hiderMode,
@@ -38,11 +39,13 @@ export const MatchingQuestionComponent = ({
     questionKey,
     sub,
     className,
+    hideDeleteButton,
 }: {
     data: MatchingQuestion;
     questionKey: number;
     sub?: string;
     className?: string;
+    hideDeleteButton?: boolean;
 }) => {
     useStore(triggerLocalRefresh);
     const $hiderMode = useStore(hiderMode);
@@ -50,6 +53,7 @@ export const MatchingQuestionComponent = ({
     const $displayHidingZones = useStore(displayHidingZones);
     const $drawingQuestionKey = useStore(drawingQuestionKey);
     const $isLoading = useStore(isLoading);
+    const $developerMode = useStore(developerMode);
     const label = `Matching
     ${
         $questions
@@ -170,6 +174,7 @@ export const MatchingQuestionComponent = ({
             }}
             locked={!data.drag}
             setLocked={(locked) => questionModified((data.drag = !locked))}
+            hideDeleteButton={hideDeleteButton}
         >
             <SidebarMenuItem className={MENU_ITEM_CLASSNAME}>
                 <Select
@@ -184,6 +189,7 @@ export const MatchingQuestionComponent = ({
                     )}
                     groups={matchingQuestionSchema.options
                         .filter((x) => x.description !== NO_GROUP)
+                        .filter((x) => $developerMode || x.description !== "Hiding Zone Mode")
                         .map((x) => [
                             x.description,
                             Object.fromEntries(

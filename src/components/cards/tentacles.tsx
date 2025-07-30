@@ -36,11 +36,13 @@ export const TentacleQuestionComponent = ({
     questionKey,
     sub,
     className,
+    hideDeleteButton,
 }: {
     data: TentacleQuestion;
     questionKey: number;
     sub?: string;
     className?: string;
+    hideDeleteButton?: boolean;
 }) => {
     const $questions = useStore(questions);
     const $drawingQuestionKey = useStore(drawingQuestionKey);
@@ -65,6 +67,7 @@ export const TentacleQuestionComponent = ({
             }}
             locked={!data.drag}
             setLocked={(locked) => questionModified((data.drag = !locked))}
+            hideDeleteButton={hideDeleteButton}
         >
             <SidebarMenuItem>
                 <div className={cn(MENU_ITEM_CLASSNAME, "gap-2 flex flex-row")}>

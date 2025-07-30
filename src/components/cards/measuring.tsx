@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/sidebar-l";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import {
+    developerMode,
     displayHidingZones,
     drawingQuestionKey,
     hiderMode,
@@ -34,11 +35,13 @@ export const MeasuringQuestionComponent = ({
     questionKey,
     sub,
     className,
+    hideDeleteButton,
 }: {
     data: MeasuringQuestion;
     questionKey: number;
     sub?: string;
     className?: string;
+    hideDeleteButton?: boolean;
 }) => {
     useStore(triggerLocalRefresh);
     const $hiderMode = useStore(hiderMode);
@@ -46,6 +49,7 @@ export const MeasuringQuestionComponent = ({
     const $displayHidingZones = useStore(displayHidingZones);
     const $drawingQuestionKey = useStore(drawingQuestionKey);
     const $isLoading = useStore(isLoading);
+    const $developerMode = useStore(developerMode);
     const label = `Measuring
     ${
         $questions
@@ -121,6 +125,7 @@ export const MeasuringQuestionComponent = ({
             }}
             locked={!data.drag}
             setLocked={(locked) => questionModified((data.drag = !locked))}
+            hideDeleteButton={hideDeleteButton}
         >
             <SidebarMenuItem className={MENU_ITEM_CLASSNAME}>
                 <Select
@@ -135,6 +140,7 @@ export const MeasuringQuestionComponent = ({
                     )}
                     groups={measuringQuestionSchema.options
                         .filter((x) => x.description !== NO_GROUP)
+                        .filter((x) => $developerMode || x.description !== "Hiding Zone Mode")
                         .map((x) => [
                             x.description,
                             Object.fromEntries(
