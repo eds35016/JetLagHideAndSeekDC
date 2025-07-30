@@ -248,18 +248,3 @@ div.leaflet-control-attribution.leaflet-control {
 .train-predictions-scroll.mobile-drawer {
     scrollbar-color: #6b7280 #374151;
 }
-
-/* Mobile select dropdown positioning */
-@media (max-width: 767px) {
-    /* Ensure mobile select dropdowns can expand properly */
-    select {
-        position: relative !important;
-        z-index: 1060 !important;
-    }
-    
-    /* Prevent parent containers from constraining mobile select dropdowns */
-    .sidebar-content,
-    [data-sidebar="content"] {
-        overflow: visible !important;
-    }
-}
