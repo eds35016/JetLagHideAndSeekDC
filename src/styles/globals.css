@@ -194,3 +194,72 @@ div.leaflet-control-attribution.leaflet-control {
 [data-tutorial-active="true"] [role="dialog"] {
     position: fixed !important;
 }
+
+/* Custom scrollbar styling for train predictions */
+.train-predictions-scroll {
+    scrollbar-width: thin;
+    scrollbar-gutter: stable;
+}
+
+/* Desktop/popup scrollbar (white background) */
+.train-predictions-scroll::-webkit-scrollbar {
+    width: 6px;
+}
+
+.train-predictions-scroll::-webkit-scrollbar-track {
+    background: #ffffff;
+    border-radius: 3px;
+}
+
+.train-predictions-scroll::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 3px;
+    transition: background-color 0.2s ease;
+}
+
+.train-predictions-scroll::-webkit-scrollbar-thumb:hover {
+    background: #9ca3af;
+}
+
+.train-predictions-scroll {
+    scrollbar-color: #d1d5db #ffffff;
+}
+
+/* Mobile drawer scrollbar (dark background with rounded corners) */
+.train-predictions-scroll.mobile-drawer::-webkit-scrollbar {
+    width: 8px;
+}
+
+.train-predictions-scroll.mobile-drawer::-webkit-scrollbar-track {
+    background: #374151;
+    border-radius: 10px;
+}
+
+.train-predictions-scroll.mobile-drawer::-webkit-scrollbar-thumb {
+    background: #6b7280;
+    border-radius: 10px;
+    transition: background-color 0.2s ease;
+}
+
+.train-predictions-scroll.mobile-drawer::-webkit-scrollbar-thumb:hover {
+    background: #9ca3af;
+}
+
+.train-predictions-scroll.mobile-drawer {
+    scrollbar-color: #6b7280 #374151;
+}
+
+/* Mobile select dropdown positioning */
+@media (max-width: 767px) {
+    /* Ensure mobile select dropdowns can expand properly */
+    select {
+        position: relative !important;
+        z-index: 1060 !important;
+    }
+    
+    /* Prevent parent containers from constraining mobile select dropdowns */
+    .sidebar-content,
+    [data-sidebar="content"] {
+        overflow: visible !important;
+    }
+}

@@ -237,15 +237,32 @@ const StationDrawer = ({
     if (!isOpen || !station) return null;
 
     const displayName = station.NAME === "King St-Old Town" ? "King St-Old Town/Alexandria" : station.NAME;
+    
+    // Get station lines and colors for minimized display
+    const lines = station.LINE.split(',').map((line: string) => line.trim());
+    const lineColors = lines.map((line: string) => metroLineColors[line.toLowerCase()] || '#666666');
+    const railwayLines = STATION_RAILWAY_LINES[station.NAME] || [];
 
     // Handle touch events for swipe gestures
     const handleTouchStart = (e: React.TouchEvent) => {
+        // Check if the touch started within a scrollable area
+        const target = e.target as HTMLElement;
+        const scrollableArea = target.closest('.train-predictions-scroll');
+        
+        // If touch started in a scrollable area, don't handle drawer gestures
+        if (scrollableArea) {
+            return;
+        }
+        
         setTouchEnd(null);
         setTouchStart(e.targetTouches[0].clientY);
     };
 
     const handleTouchMove = (e: React.TouchEvent) => {
-        setTouchEnd(e.targetTouches[0].clientY);
+        // Only handle move if we have a valid touch start (not in scrollable area)
+        if (touchStart !== null) {
+            setTouchEnd(e.targetTouches[0].clientY);
+        }
     };
 
     const handleTouchEnd = () => {
@@ -266,16 +283,17 @@ const StationDrawer = ({
 
     return (
         <div 
-            className={`fixed inset-x-0 bottom-0 z-[1040] bg-background border-t rounded-t-[10px] transition-all duration-300 ease-in-out ${
-                isMinimized ? 'translate-y-[calc(100%-4rem)]' : 'translate-y-0'
+            className={`fixed inset-x-0 bottom-0 z-[1030] bg-background border-t rounded-t-[10px] transition-all duration-300 ease-in-out ${
+                isMinimized ? 'translate-y-[calc(100%-6rem)]' : 'translate-y-0'
             } ${
                 hasAnimated ? 'translate-y-0' : 'translate-y-full'
             }`}
             style={{ 
-                maxHeight: isMinimized ? '4rem' : '70vh',
+                maxHeight: isMinimized ? '6rem' : '70vh',
                 pointerEvents: 'auto', // Ensure the drawer itself is interactable
+                backgroundColor: 'hsl(var(--background))', // Ensure solid background
                 transform: hasAnimated 
-                    ? (isMinimized ? 'translateY(calc(100% - 4rem))' : 'translateY(0)') 
+                    ? (isMinimized ? 'translateY(calc(100% - 6rem))' : 'translateY(0)') 
                     : 'translateY(100%)'
             }}
             onTouchStart={handleTouchStart}
@@ -290,9 +308,32 @@ const StationDrawer = ({
                 <div className="mx-auto h-2 w-[100px] rounded-full bg-muted absolute top-2 left-1/2 transform -translate-x-1/2" />
                 <div className="flex-1 mt-2">
                     <h3 className="text-lg font-semibold text-white truncate">{displayName}</h3>
-                    <p className={`text-sm text-gray-300 transition-opacity duration-300 ${isMinimized ? 'opacity-0' : 'opacity-100'}`}>
-                        Metro Station Information
-                    </p>
+                    {isMinimized ? (
+                        <div className="flex flex-wrap gap-1 mt-1">
+                            {lines.map((line: string, index: number) => (
+                                <span 
+                                    key={`${line}-${index}`}
+                                    className="inline-block px-2 py-1 text-xs font-bold text-white rounded-lg uppercase"
+                                    style={{ backgroundColor: lineColors[index] }}
+                                >
+                                    {line}
+                                </span>
+                            ))}
+                            {railwayLines.map((railwayLine: string) => (
+                                <span 
+                                    key={railwayLine}
+                                    className="inline-block px-2 py-1 text-xs font-medium rounded-lg uppercase border-2 bg-transparent text-white"
+                                    style={{ 
+                                        borderColor: RAILWAY_COLORS[railwayLine]
+                                    }}
+                                >
+                                    {railwayLine}
+                                </span>
+                            ))}
+                        </div>
+                    ) : (
+                        <p className="text-sm text-gray-300 transition-opacity duration-300">Metro Station Information</p>
+                    )}
                 </div>
                 <Button 
                     variant="ghost" 
@@ -320,6 +361,9 @@ const StationDrawer = ({
                     maxHeight: isMinimized ? '0' : 'calc(70vh - 5rem)',
                     transition: 'max-height 0.3s ease-in-out, opacity 0.3s ease-in-out, transform 0.3s ease-in-out'
                 }}
+                onTouchStart={(e) => e.stopPropagation()}
+                onTouchMove={(e) => e.stopPropagation()}
+                onTouchEnd={(e) => e.stopPropagation()}
             >
                 <StationDetails 
                     station={station}

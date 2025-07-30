@@ -121,7 +121,7 @@ export const TrainPredictions = ({ stationCode, isOpen, isDarkMode = false }: Tr
     if (loading && predictions.length === 0) {
         return (
             <div style={{ marginTop: "12px" }}>
-                <h4 style={{ fontWeight: "600", marginBottom: "8px", fontSize: "14px", color: colors.heading }}>Train Arrivals</h4>
+                <h4 style={{ fontWeight: "600", marginBottom: "8px", fontSize: "14px", color: colors.heading }}>Metro Arrivals</h4>
                 <div>
                     {[1, 2, 3].map((i) => (
                         <div key={i} style={{ display: "flex", alignItems: "center", marginBottom: "8px" }}>
@@ -138,7 +138,7 @@ export const TrainPredictions = ({ stationCode, isOpen, isDarkMode = false }: Tr
     if (error) {
         return (
             <div style={{ marginTop: "12px" }}>
-                <h4 style={{ fontWeight: "600", marginBottom: "8px", fontSize: "14px", color: colors.heading }}>Train Arrivals</h4>
+                <h4 style={{ fontWeight: "600", marginBottom: "8px", fontSize: "14px", color: colors.heading }}>Metro Arrivals</h4>
                 <p style={{ color: colors.error, fontSize: "12px" }}>{error}</p>
             </div>
         );
@@ -147,7 +147,7 @@ export const TrainPredictions = ({ stationCode, isOpen, isDarkMode = false }: Tr
     if (predictions.length === 0 && !loading) {
         return (
             <div style={{ marginTop: "12px" }}>
-                <h4 style={{ fontWeight: "600", marginBottom: "8px", fontSize: "14px", color: colors.heading }}>Train Arrivals</h4>
+                <h4 style={{ fontWeight: "600", marginBottom: "8px", fontSize: "14px", color: colors.heading }}>Metro Arrivals</h4>
                 <p style={{ color: colors.text, fontSize: "12px" }}>No trains scheduled</p>
             </div>
         );
@@ -156,13 +156,20 @@ export const TrainPredictions = ({ stationCode, isOpen, isDarkMode = false }: Tr
     return (
         <div style={{ marginTop: "12px" }}>
             <h4 style={{ fontWeight: "600", marginBottom: "8px", fontSize: "14px", color: colors.heading }}>
-                Train Arrivals
+                Metro Arrivals
                 {loading && (
                     <span style={{ marginLeft: "8px", fontSize: "12px", color: colors.muted }}>Updating...</span>
                 )}
             </h4>
-            <div style={{ maxHeight: "128px", overflowY: "auto" }}>
-                {predictions.slice(0, 6).map((train, index) => (
+            <div 
+                className={`train-predictions-scroll ${isDarkMode ? 'mobile-drawer' : ''}`}
+                style={{ 
+                    maxHeight: "128px", 
+                    overflowY: "auto",
+                    paddingRight: "4px",
+                }}
+            >
+                {predictions.map((train, index) => (
                     <div key={index} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", fontSize: "12px", marginBottom: "4px" }}>
                         <div style={{ display: "flex", alignItems: "center" }}>
                             <span

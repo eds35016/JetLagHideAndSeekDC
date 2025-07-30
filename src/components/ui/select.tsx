@@ -3,6 +3,8 @@ import { Check, ChevronDown, ChevronUp } from "lucide-react";
 import * as React from "react";
 
 import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { MobileSelect } from "./mobile-select";
 
 type Options<T extends string> = Partial<Record<T, string>>;
 const Select = <T extends string>({
@@ -21,6 +23,21 @@ const Select = <T extends string>({
     onValueChange?: (value: T) => void;
     value: T;
 }) => {
+    const isMobile = useIsMobile();
+    
+    // Use native mobile select on mobile devices
+    if (isMobile) {
+        return (
+            <MobileSelect
+                trigger={trigger}
+                options={options}
+                groups={groups}
+                {...rest}
+            />
+        );
+    }
+
+    // Use Radix Select for desktop
     const { placeholder, className } =
         typeof trigger == "string" ? { placeholder: trigger } : trigger;
     const mapObj = <T,>(
