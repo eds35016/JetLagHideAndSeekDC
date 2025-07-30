@@ -14,6 +14,55 @@ body {
     height: 100svh;
 }
 
+/* Improve touch behavior on mobile */
+@media (max-width: 767px) {
+    .leaflet-container {
+        touch-action: pan-x pan-y;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+    
+    /* Prevent text selection and improve touch on map tiles */
+    .leaflet-container img {
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        pointer-events: none;
+    }
+    
+    /* Ensure interactive elements remain clickable */
+    .leaflet-marker-icon,
+    .leaflet-popup,
+    .leaflet-popup-content,
+    .leaflet-popup-content-wrapper,
+    .leaflet-control,
+    .leaflet-interactive {
+        touch-action: manipulation;
+        pointer-events: auto !important;
+        -webkit-user-select: auto;
+        -khtml-user-select: auto;
+        -moz-user-select: auto;
+        -ms-user-select: auto;
+        user-select: auto;
+    }
+    
+    /* Ensure SVG elements in markers are interactive */
+    .leaflet-interactive path,
+    .leaflet-interactive circle,
+    .leaflet-marker-icon path,
+    .leaflet-marker-icon circle {
+        pointer-events: auto;
+        touch-action: manipulation;
+    }
+}
+
 .leaflet-bottom.leaflet-right {
     /* Hypothetically this could cause an issue with other bottom right elements */
     z-index: 752;

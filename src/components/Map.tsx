@@ -439,7 +439,7 @@ export const Map = ({ className }: { className?: string }) => {
         }
     }, [$developerMode]);
 
-    // Explicitly disable context menu on mobile
+        // Explicitly disable context menu on mobile
     useEffect(() => {
         if (!map) return;
         
@@ -489,6 +489,86 @@ export const Map = ({ className }: { className?: string }) => {
                 (map as any).contextmenu.enable();
             }
         }
+    }, [map, isMobile]);
+
+    // Prevent page scrolling when interacting with map on mobile
+    useEffect(() => {
+        if (!map || !isMobile) return;
+
+        const mapContainer = map.getContainer();
+        if (!mapContainer) return;
+
+        const preventPageScroll = (e: TouchEvent) => {
+            const target = e.target as Element;
+            
+            // Check if the touch target is within a scrollable container
+            // Allow scrolling in train predictions and other scrollable components
+            const isInScrollableContainer = target.closest('.train-predictions-scroll') ||
+                                          target.closest('[data-allow-scroll]') ||
+                                          target.closest('.overflow-y-auto') ||
+                                          target.closest('.overflow-auto');
+            
+            // Check if touching a Leaflet interactive element (markers, popups, controls)
+            const isLeafletInteractive = target.closest('.leaflet-marker-icon') ||
+                                        target.closest('.leaflet-popup') ||
+                                        target.closest('.leaflet-popup-content') ||
+                                        target.closest('.leaflet-popup-content-wrapper') ||
+                                        target.closest('.leaflet-control') ||
+                                        target.closest('.leaflet-interactive') ||
+                                        target.matches('path') || // SVG paths in markers
+                                        target.matches('circle') || // SVG circles in markers
+                                        (target as HTMLElement).style?.pointerEvents !== 'none';
+            
+            // Only prevent scrolling if not in a scrollable container and not on interactive elements
+            if (!isInScrollableContainer && !isLeafletInteractive) {
+                e.preventDefault();
+                // Also prevent body scrolling during map interaction
+                document.body.style.overflow = 'hidden';
+            }
+        };
+
+        const preventPageScrollMove = (e: TouchEvent) => {
+            const target = e.target as Element;
+            
+            const isInScrollableContainer = target.closest('.train-predictions-scroll') ||
+                                          target.closest('[data-allow-scroll]') ||
+                                          target.closest('.overflow-y-auto') ||
+                                          target.closest('.overflow-auto');
+            
+            // Allow touch move on interactive elements for proper gesture handling
+            const isLeafletInteractive = target.closest('.leaflet-marker-icon') ||
+                                        target.closest('.leaflet-popup') ||
+                                        target.closest('.leaflet-popup-content') ||
+                                        target.closest('.leaflet-popup-content-wrapper') ||
+                                        target.closest('.leaflet-control') ||
+                                        target.closest('.leaflet-interactive') ||
+                                        target.matches('path') ||
+                                        target.matches('circle');
+            
+            if (!isInScrollableContainer && !isLeafletInteractive) {
+                e.preventDefault();
+            }
+        };
+
+        const restoreBodyScroll = () => {
+            // Restore body scrolling when touch interaction ends
+            document.body.style.overflow = '';
+        };
+
+        // Add touch event listeners to prevent page scrolling
+        mapContainer.addEventListener('touchstart', preventPageScroll, { passive: false });
+        mapContainer.addEventListener('touchmove', preventPageScrollMove, { passive: false });
+        mapContainer.addEventListener('touchend', restoreBodyScroll, { passive: true });
+        mapContainer.addEventListener('touchcancel', restoreBodyScroll, { passive: true });
+
+        return () => {
+            mapContainer.removeEventListener('touchstart', preventPageScroll);
+            mapContainer.removeEventListener('touchmove', preventPageScrollMove);
+            mapContainer.removeEventListener('touchend', restoreBodyScroll);
+            mapContainer.removeEventListener('touchcancel', restoreBodyScroll);
+            // Ensure body scroll is restored on cleanup
+            document.body.style.overflow = '';
+        };
     }, [map, isMobile]);
 
     return displayMap;
