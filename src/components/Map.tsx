@@ -9,6 +9,8 @@ import { useEffect, useMemo } from "react";
 import { MapContainer, ScaleControl, TileLayer } from "react-leaflet";
 import { toast } from "react-toastify";
 
+import { useIsMobile } from "@/hooks/use-mobile";
+
 import {
     additionalMapGeoLocations,
     addQuestion,
@@ -51,6 +53,7 @@ export const Map = ({ className }: { className?: string }) => {
     const $followMe = useStore(followMe);
     const $developerMode = useStore(developerMode);
     const map = useStore(leafletMapContext);
+    const isMobile = useIsMobile();
 
     const followMeMarkerRef = useMemo(
         () => ({ current: null as L.Marker | null }),
@@ -177,9 +180,9 @@ export const Map = ({ className }: { className?: string }) => {
                 className={cn("w-[500px] h-[500px]", className)}
                 ref={leafletMapContext.set}
                 // @ts-expect-error Typing doesn't update from react-contextmenu
-                contextmenu={true}
-                contextmenuWidth={140}
-                contextmenuItems={[
+                contextmenu={!isMobile}
+                contextmenuWidth={!isMobile ? 140 : 0}
+                contextmenuItems={!isMobile ? [
                     {
                         text: "Add Radius",
                         callback: (e: any) =>
@@ -278,7 +281,7 @@ export const Map = ({ className }: { className?: string }) => {
                             );
                         },
                     },
-                ]}
+                ] : undefined}
             >
                 {!($highlightTrainLines && $thunderforestApiKey) && (
                     <TileLayer
@@ -322,7 +325,7 @@ export const Map = ({ className }: { className?: string }) => {
                 />
             </MapContainer>
         ),
-        [map, $highlightTrainLines, $thunderforestApiKey],
+        [map, $highlightTrainLines, $thunderforestApiKey, isMobile],
     );
 
     useEffect(() => {
@@ -435,6 +438,58 @@ export const Map = ({ className }: { className?: string }) => {
             }
         }
     }, [$developerMode]);
+
+    // Explicitly disable context menu on mobile
+    useEffect(() => {
+        if (!map) return;
+        
+        if (isMobile) {
+            // Disable context menu completely on mobile
+            (map.options as any).contextmenu = false;
+            // Remove any existing context menu handlers
+            if ((map as any).contextmenu) {
+                (map as any).contextmenu.disable();
+            }
+            // Prevent default context menu on long press/right click
+            const mapContainer = map.getContainer();
+            if (mapContainer) {
+                const preventContextMenu = (e: Event) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                };
+                mapContainer.addEventListener('contextmenu', preventContextMenu);
+                mapContainer.addEventListener('touchstart', (e: TouchEvent) => {
+                    if (e.touches.length === 1) {
+                        // Prevent long press context menu
+                        let timeout = setTimeout(() => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                        }, 500);
+                        
+                        const clearTimer = () => {
+                            clearTimeout(timeout);
+                            mapContainer.removeEventListener('touchend', clearTimer);
+                            mapContainer.removeEventListener('touchmove', clearTimer);
+                        };
+                        
+                        mapContainer.addEventListener('touchend', clearTimer);
+                        mapContainer.addEventListener('touchmove', clearTimer);
+                    }
+                });
+                
+                return () => {
+                    mapContainer.removeEventListener('contextmenu', preventContextMenu);
+                };
+            }
+        } else {
+            // Re-enable context menu on desktop
+            (map.options as any).contextmenu = true;
+            if ((map as any).contextmenu) {
+                (map as any).contextmenu.enable();
+            }
+        }
+    }, [map, isMobile]);
 
     return displayMap;
 };
