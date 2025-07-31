@@ -101,9 +101,9 @@ export const determineMeasuringBoundary = async (
             return [highSpeedBase(features)];
         }
         case "coastline": {
-            const coastline = turf.lineToPolygon(
-                await fetchCoastline(),
-            ) as Feature<MultiPolygon>;
+            const coastlineData = await fetchCoastline();
+            // Extract the first feature from the FeatureCollection as it contains MultiPolygon geometry
+            const coastline = coastlineData.features[0] as Feature<MultiPolygon>;
 
             const distanceToCoastline = turf.pointToPolygonDistance(
                 turf.point([question.lng, question.lat]),

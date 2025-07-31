@@ -48,5 +48,5 @@ export default defineConfig({
         enabled: false,
     },
     site: "https://jetlag.philoop.net",
-    base: "",
+    base: "/",
 });
