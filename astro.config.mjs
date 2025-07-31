@@ -25,17 +25,17 @@ export default defineConfig({
                     "Automatically generate maps for Jet Lag The Game: Hide and Seek with ease! Simply name the questions and watch the map eliminate hundreds of possibilities in seconds.",
                 icons: [
                     {
-                        src: "https://jetlag.philoop.net/JetLagHideAndSeek/JLIcon.png",
+                        src: "https://jetlag.philoop.net/JLIcon.png",
                         sizes: "680x680",
                         type: "image/png",
                     },
                     {
-                        src: "https://jetlag.philoop.net/JetLagHideAndSeek/android-chrome-192x192.png",
+                        src: "https://jetlag.philoop.net/android-chrome-192x192.png",
                         sizes: "192x192",
                         type: "image/png",
                     },
                     {
-                        src: "https://jetlag.philoop.net/JetLagHideAndSeek/android-chrome-512x512.png",
+                        src: "https://jetlag.philoop.net/android-chrome-512x512.png",
                         sizes: "512x512",
                         type: "image/png",
                     },
@@ -47,6 +47,6 @@ export default defineConfig({
     devToolbar: {
         enabled: false,
     },
-    site: "https://taibeled.github.io",
-    base: "JetLagHideAndSeek",
+    site: "https://jetlag.philoop.net",
+    base: "",
 });

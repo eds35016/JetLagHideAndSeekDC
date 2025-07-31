@@ -404,31 +404,47 @@ export const MetroLinesOverlay = () => {
     useEffect(() => {
         const loadMetroData = async () => {
             try {
-                // In development, we need to include the base path manually
-                const basePath = import.meta.env.DEV ? '/JetLagHideAndSeek' : import.meta.env.BASE_URL;
-                
                 // Load metro lines
-                const linesUrl = `${basePath}/DC/Metro_Lines_Regional.geojson`;
+                const linesUrl = '/DC/Metro_Lines_Regional.geojson';
                 console.log('Fetching lines from:', linesUrl);
                 const linesResponse = await fetch(linesUrl);
+                if (!linesResponse.ok) {
+                    throw new Error(`Failed to load metro lines: ${linesResponse.status} ${linesResponse.statusText}`);
+                }
                 const linesData = await linesResponse.json();
                 setMetroLinesData(linesData);
 
                 // Load metro stops
-                const stopsUrl = `${basePath}/DC/Metro_Stations_Regional.geojson`;
+                const stopsUrl = '/DC/Metro_Stations_Regional.geojson';
                 console.log('Fetching stops from:', stopsUrl);
                 const stopsResponse = await fetch(stopsUrl);
+                if (!stopsResponse.ok) {
+                    throw new Error(`Failed to load metro stops: ${stopsResponse.status} ${stopsResponse.statusText}`);
+                }
                 const stopsData = await stopsResponse.json();
                 setMetroStopsData(stopsData);
 
                 // Load metro entrances
-                const entrancesUrl = `${basePath}/DC/Metro_Station_Entrances_Regional.geojson`;
+                const entrancesUrl = '/DC/Metro_Station_Entrances_Regional.geojson';
                 console.log('Fetching entrances from:', entrancesUrl);
                 const entrancesResponse = await fetch(entrancesUrl);
+                if (!entrancesResponse.ok) {
+                    throw new Error(`Failed to load metro entrances: ${entrancesResponse.status} ${entrancesResponse.statusText}`);
+                }
                 const entrancesData = await entrancesResponse.json();
                 setMetroEntrancesData(entrancesData);
+                
+                console.log('Metro data loaded successfully:', {
+                    linesFeatures: linesData.features?.length || 0,
+                    stopsFeatures: stopsData.features?.length || 0,
+                    entrancesFeatures: entrancesData.features?.length || 0
+                });
             } catch (error) {
                 console.error('Failed to load metro data:', error);
+                // Try to provide more specific error information
+                if (error instanceof TypeError && error.message.includes('fetch')) {
+                    console.error('Network error - check if the GeoJSON files exist in public/DC/');
+                }
             }
         };
         
