@@ -25,7 +25,6 @@ const STATION_RAILWAY_LINES: Record<string, string[]> = {
     "Union Station": ["MARC-Brunswick", "MARC-Penn", "MARC-Camden", "Manassas", "Fredericksburg"],
     "Silver Spring": ["MARC-Brunswick"],
     "Rockville": ["MARC-Brunswick"],
-    "Landover": ["MARC-Penn"],
     "New Carrollton": ["MARC-Penn"],
     "College Park-U of Md": ["MARC-Camden"],
     "Greenbelt": ["MARC-Camden"],
